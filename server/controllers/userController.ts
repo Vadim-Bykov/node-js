@@ -1,7 +1,8 @@
 import { RequestHandler } from 'express';
-import { RoleModel, RoleType } from '../models/RoleModel';
+import { RoleType } from '../models/RoleModel';
+import * as userService from '../services/userService';
 
-interface RegistrationBody {
+export interface RegistrationBody {
   email: string;
   password: string;
   roles?: RoleType[];
@@ -16,9 +17,12 @@ export const registration: RequestHandler<
   try {
     const { email, password, roles } = req.body;
     const picture = req.files?.picture;
-    console.log({ email, password, roles });
 
-    res.json({});
+    const user = await userService.registration({ ...req.body, picture });
+
+    console.log({ user });
+
+    res.json({ user });
   } catch (error) {
     next(error);
   }
