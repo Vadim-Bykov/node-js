@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import fileUpload from 'express-fileupload';
 import './envConfig';
 import { router } from './routers';
+import { errorMiddleware } from './middlewares/ErrorMiddleware';
 
 const PORT = process.env.PORT || 5500;
 const DB_URL = process.env.DB_URL as string;
@@ -16,6 +17,7 @@ app.use(cookieParser());
 app.use(fileUpload({}));
 app.use('/api', router);
 app.use('/files', express.static('static'));
+app.use(errorMiddleware);
 
 (async function () {
   try {

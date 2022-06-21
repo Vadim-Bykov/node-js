@@ -1,5 +1,6 @@
 import { UploadedFile } from 'express-fileupload';
 import { RegistrationBody } from '../controllers/userController';
+import { ApiError } from '../errors/ApiError';
 import { UserModal } from '../models/UserModel';
 
 interface IRegistrationParams extends RegistrationBody {
@@ -14,7 +15,7 @@ export const registration = async ({
 }: IRegistrationParams) => {
   const candidate = await UserModal.findOne({ email });
   if (candidate) {
-    throw Error(`User with email: ${email} exists`);
+    throw ApiError.badRequest(`User with email: ${email} exists`);
   }
 
   const user = await UserModal.create({ email, password, roles });
