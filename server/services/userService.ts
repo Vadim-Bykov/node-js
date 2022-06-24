@@ -1,7 +1,9 @@
 import { UploadedFile } from 'express-fileupload';
 import { RegistrationBody } from '../controllers/userController';
+import { getUserDto } from '../dtos/userDto';
 import { ApiError } from '../errors/ApiError';
 import { UserModal } from '../models/UserModel';
+import * as tokenService from './tokenService';
 
 interface IRegistrationParams extends RegistrationBody {
   picture?: UploadedFile | UploadedFile[];
@@ -20,5 +22,10 @@ export const registration = async ({
 
   const user = await UserModal.create({ email, password, roles });
 
-  return user;
+  const userDto = getUserDto(user);
+
+  const { refreshToken, accessToken } = tokenService.generateToken(userDto);
+  await tokenService.saveRefreshToken(userDto.id, refreshToken);
+
+  return { user: userDto, refreshToken, accessToken };
 };
