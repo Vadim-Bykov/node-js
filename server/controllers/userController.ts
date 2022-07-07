@@ -19,6 +19,11 @@ export const registration: RequestHandler<
 
     const user = await userService.registration({ ...req.body, picture });
 
+    res.cookie('refreshToken', user.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+
     res.json(user);
   } catch (error) {
     next(error);
