@@ -1,4 +1,6 @@
 import { RequestHandler } from 'express';
+import { validationResult } from 'express-validator';
+import { ApiError } from '../errors/ApiError';
 import { RoleType } from '../models/RoleModel';
 import * as userService from '../services/userService';
 
@@ -15,6 +17,11 @@ export const registration: RequestHandler<
   any
 > = async (req, res, next) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(ApiError.badRequest('Validation error', errors.array()));
+    }
+
     const picture = req.files?.picture;
 
     const user = await userService.registration({ ...req.body, picture });

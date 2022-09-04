@@ -1,9 +1,11 @@
 import { UploadedFile } from 'express-fileupload';
+import bcrypt from 'bcrypt';
 import { RegistrationBody } from '../controllers/userController';
 import { getUserDto } from '../dtos/userDto';
 import { ApiError } from '../errors/ApiError';
 import { UserModal } from '../models/UserModel';
 import * as tokenService from './tokenService';
+import { RoleModel } from '../models/RoleModel';
 
 interface IRegistrationParams extends RegistrationBody {
   picture?: UploadedFile | UploadedFile[];
@@ -20,7 +22,10 @@ export const registration = async ({
     throw ApiError.badRequest(`User with email: ${email} exists`);
   }
 
-  const user = await UserModal.create({ email, password, roles });
+  const hashPassword = await bcrypt.hash(password, 3);
+  // const userRole = RoleModel.find({role: roles?[0]})
+
+  const user = await UserModal.create({ email, password: hashPassword, roles });
 
   const userDto = getUserDto(user);
 
