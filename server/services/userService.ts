@@ -5,6 +5,7 @@ import { getUserDto } from '../dtos/userDto';
 import { ApiError } from '../errors/ApiError';
 import { UserModal } from '../models/UserModel';
 import { saveFile } from './fileService';
+import { findRoles } from './roleService';
 import * as tokenService from './tokenService';
 
 interface IRegistrationParams extends RegistrationBody {
@@ -17,27 +18,31 @@ export const registration = async ({
   picture,
   roles,
 }: IRegistrationParams) => {
-  const candidate = await UserModal.findOne({ email });
-  if (candidate) {
-    throw ApiError.badRequest(`User with email: ${email} exists`);
+  try {
+    const candidate = await UserModal.findOne({ email });
+    if (candidate) {
+      throw ApiError.badRequest(`User with email: ${email} exists`);
+    }
+
+    const hashPassword = await bcrypt.hash(password, 3);
+    const fileName = saveFile(picture);
+
+    const validRoles = await findRoles(roles);
+
+    const user = await UserModal.create({
+      email,
+      password: hashPassword,
+      roles: validRoles,
+      picture: fileName,
+    });
+
+    const userDto = getUserDto(user);
+
+    const { refreshToken, accessToken } = tokenService.generateToken(userDto);
+    await tokenService.saveRefreshToken(userDto.id, refreshToken);
+
+    return { user: userDto, refreshToken, accessToken };
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
   }
-
-  const hashPassword = await bcrypt.hash(password, 3);
-  const fileName = saveFile(picture);
-
-  // const userRole = RoleModel.find({role: roles?[0]})
-
-  const user = await UserModal.create({
-    email,
-    password: hashPassword,
-    roles,
-    picture: fileName,
-  });
-
-  const userDto = getUserDto(user);
-
-  const { refreshToken, accessToken } = tokenService.generateToken(userDto);
-  await tokenService.saveRefreshToken(userDto.id, refreshToken);
-
-  return { user: userDto, refreshToken, accessToken };
 };
