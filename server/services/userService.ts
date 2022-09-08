@@ -1,14 +1,14 @@
-import { UploadedFile } from 'express-fileupload';
 import bcrypt from 'bcrypt';
+import { UploadedFile } from 'express-fileupload';
 import { RegistrationBody } from '../controllers/userController';
 import { getUserDto } from '../dtos/userDto';
 import { ApiError } from '../errors/ApiError';
 import { UserModal } from '../models/UserModel';
+import { saveFile } from './fileService';
 import * as tokenService from './tokenService';
-import { RoleModel } from '../models/RoleModel';
 
 interface IRegistrationParams extends RegistrationBody {
-  picture?: UploadedFile | UploadedFile[];
+  picture?: UploadedFile;
 }
 
 export const registration = async ({
@@ -23,9 +23,16 @@ export const registration = async ({
   }
 
   const hashPassword = await bcrypt.hash(password, 3);
+  const fileName = saveFile(picture);
+
   // const userRole = RoleModel.find({role: roles?[0]})
 
-  const user = await UserModal.create({ email, password: hashPassword, roles });
+  const user = await UserModal.create({
+    email,
+    password: hashPassword,
+    roles,
+    picture: fileName,
+  });
 
   const userDto = getUserDto(user);
 

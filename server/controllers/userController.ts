@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express';
+import { UploadedFile } from 'express-fileupload';
 import { validationResult } from 'express-validator';
 import { ApiError } from '../errors/ApiError';
 import { RoleType } from '../models/RoleModel';
@@ -24,7 +25,10 @@ export const registration: RequestHandler<
 
     const picture = req.files?.picture;
 
-    const user = await userService.registration({ ...req.body, picture });
+    const user = await userService.registration({
+      ...req.body,
+      picture: picture as UploadedFile,
+    });
 
     res.cookie('refreshToken', user.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,

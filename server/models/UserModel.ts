@@ -16,6 +16,7 @@ const User = new Schema<IUserData>({
   password: { type: String, required: true },
   isActivated: { type: Boolean, default: false },
   activationLink: { type: String },
+  picture: { type: String },
   roles: [{ type: String, ref: 'Role' }],
 });
 
