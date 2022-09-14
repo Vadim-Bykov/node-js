@@ -1,3 +1,4 @@
+import { v4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import { UploadedFile } from 'express-fileupload';
 import { RegistrationBody } from '../controllers/userController';
@@ -5,6 +6,7 @@ import { getUserDto } from '../dtos/userDto';
 import { ApiError } from '../errors/ApiError';
 import { UserModal } from '../models/UserModel';
 import { saveFile } from './fileService';
+import * as mailService from './mailServise';
 import { findRoles } from './roleService';
 import * as tokenService from './tokenService';
 
@@ -24,6 +26,7 @@ export const registration = async ({
       throw ApiError.badRequest(`User with email: ${email} exists`);
     }
 
+    const activationLink = v4();
     const hashPassword = await bcrypt.hash(password, 3);
     const fileName = saveFile(picture);
 
@@ -40,6 +43,7 @@ export const registration = async ({
 
     const { refreshToken, accessToken } = tokenService.generateToken(userDto);
     await tokenService.saveRefreshToken(userDto.id, refreshToken);
+    // await mailService.sendActivationMail(email, activationLink);
 
     return { user: userDto, refreshToken, accessToken };
   } catch (error: any) {
