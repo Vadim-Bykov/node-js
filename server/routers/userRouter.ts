@@ -10,4 +10,7 @@ userRouter.post(
   [email, password],
   userController.registration
 );
-userRouter.get('/', authMiddleware(['ADMIN']), userController.getAllUsers);
+
+userRouter.post('/login', userController.login);
+
+userRouter.get('/', authMiddleware(['USER']), userController.getAllUsers);

@@ -41,9 +41,34 @@ export const registration: RequestHandler<
   }
 };
 
+export interface LoginBody {
+  email: string;
+  password: string;
+}
+
+export const login: RequestHandler<any, any, LoginBody, any> = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const user = await userService.login(req.body);
+
+    res.cookie('refreshToken', user.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      httpOnly: true,
+    });
+
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getAllUsers: RequestHandler = async (req, res, next) => {
   try {
     const users = await userService.getAllUsers();
+
     res.json(users);
   } catch (error) {
     next(error);

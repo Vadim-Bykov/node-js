@@ -1,7 +1,7 @@
 import { v4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import { UploadedFile } from 'express-fileupload';
-import { RegistrationBody } from '../controllers/userController';
+import { LoginBody, RegistrationBody } from '../controllers/userController';
 import { getUserDto } from '../dtos/userDto';
 import { ApiError } from '../errors/ApiError';
 import { UserModal } from '../models/UserModel';
@@ -44,6 +44,28 @@ export const registration = async ({
     const { refreshToken, accessToken } = tokenService.generateToken(userDto);
     await tokenService.saveRefreshToken(userDto.id, refreshToken);
     // await mailService.sendActivationMail(email, activationLink);
+
+    return { user: userDto, refreshToken, accessToken };
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
+  }
+};
+
+export const login = async ({ email, password }: LoginBody) => {
+  try {
+    const user = await UserModal.findOne({ email });
+    if (!user) {
+      throw ApiError.badRequest(`User with email ${email} does mot exists`);
+    }
+
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      throw ApiError.badRequest('Password is invalid');
+    }
+
+    const userDto = getUserDto(user);
+    const { accessToken, refreshToken } = tokenService.generateToken(userDto);
+    await tokenService.saveRefreshToken(userDto.id, refreshToken);
 
     return { user: userDto, refreshToken, accessToken };
   } catch (error: any) {
