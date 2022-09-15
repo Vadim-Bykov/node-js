@@ -50,3 +50,12 @@ export const registration = async ({
     throw ApiError.badRequest(error?.message);
   }
 };
+
+export const getAllUsers = async () => {
+  try {
+    const users = await UserModal.find();
+    return users;
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
+  }
+};

@@ -8,7 +8,10 @@ export class ApiError extends Error {
     this.errors = errors;
   }
 
-  static badRequest(message: string, errors?: any[]) {
+  static badRequest(
+    message: string = 'Sorry! This is a bad request',
+    errors?: any[]
+  ) {
     return new ApiError(400, message, errors);
   }
 

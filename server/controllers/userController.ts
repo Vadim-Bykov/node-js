@@ -41,5 +41,14 @@ export const registration: RequestHandler<
   }
 };
 
+export const getAllUsers: RequestHandler = async (req, res, next) => {
+  try {
+    const users = await userService.getAllUsers();
+    res.json(users);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // const userRole = await RoleModel.create({ role: 'USER' });
 // const adminRole = await RoleModel.create({ role: 'ADMIN' });
