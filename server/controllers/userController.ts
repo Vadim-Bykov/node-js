@@ -75,5 +75,20 @@ export const getAllUsers: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const getUserByID: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const { id } = req.params;
+    const user = await userService.getUserByID(id);
+
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // const userRole = await RoleModel.create({ role: 'USER' });
 // const adminRole = await RoleModel.create({ role: 'ADMIN' });

@@ -81,3 +81,18 @@ export const getAllUsers = async () => {
     throw ApiError.badRequest(error?.message);
   }
 };
+
+export const getUserByID = async (id: string) => {
+  try {
+    const user = await UserModal.findById(id);
+    if (!user) {
+      throw ApiError.badRequest('User with this ID does not exist');
+    }
+
+    const userDto = getUserDto(user);
+
+    return userDto;
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
+  }
+};

@@ -4,7 +4,7 @@ import { ApiError } from '../errors/ApiError';
 import { RoleType } from '../models/RoleModel';
 
 export const authMiddleware =
-  (roles: RoleType[]): RequestHandler =>
+  (roles: RoleType[], searchById?: boolean): RequestHandler =>
   (req, res, next) => {
     try {
       const { refreshToken } = req.cookies;
@@ -27,6 +27,10 @@ export const authMiddleware =
         return next(
           ApiError.forbidden("You don't have an access for this information")
         );
+      }
+
+      if (searchById && String(userData.id) !== req.params.id) {
+        return next(ApiError.forbidden('Tis is not your account'));
       }
 
       next();

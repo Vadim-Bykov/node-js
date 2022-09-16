@@ -11,6 +11,11 @@ userRouter.post(
   userController.registration
 );
 
-userRouter.post('/login', userController.login);
+userRouter.post('/login', [email, password], userController.login);
 
-userRouter.get('/', authMiddleware(['USER']), userController.getAllUsers);
+userRouter.get('/', authMiddleware(['ADMIN']), userController.getAllUsers);
+userRouter.get(
+  '/:id',
+  authMiddleware(['USER', 'ADMIN'], true),
+  userController.getUserByID
+);
