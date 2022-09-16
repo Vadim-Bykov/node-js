@@ -21,7 +21,6 @@ export const saveRefreshToken = async (
   userId: Types.ObjectId,
   refreshToken: string
 ) => {
-  //   const tokenData = await TokenModel.findOne({ userId });
   const tokenData = await findRefreshToken(userId);
   if (tokenData) {
     tokenData.refreshToken = refreshToken;
@@ -47,7 +46,7 @@ export const validateRefreshToken = (refreshToken: string) => {
 
 export const validateAccessToken = (accessToken: string) => {
   try {
-    const userData = jwt.verify(accessToken, JWT_REFRESH_SECRET as string);
+    const userData = jwt.verify(accessToken, JWT_ACCESS_SECRET as string);
 
     return userData as IUserDto;
   } catch (error) {
