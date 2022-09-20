@@ -37,6 +37,7 @@ export const registration = async ({
       password: hashPassword,
       roles: validRoles,
       picture: fileName,
+      activationLink,
     });
 
     const userDto = getUserDto(user);
@@ -92,6 +93,20 @@ export const getUserByID = async (id: string) => {
     const userDto = getUserDto(user);
 
     return userDto;
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
+  }
+};
+
+export const activateAccount = async (link: string) => {
+  try {
+    const user = await UserModal.findOne({ activationLink: link });
+    if (!user) {
+      throw ApiError.badRequest('Link is incorrect');
+    }
+
+    user.isActivated = true;
+    await user.save();
   } catch (error: any) {
     throw ApiError.badRequest(error?.message);
   }

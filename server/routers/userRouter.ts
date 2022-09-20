@@ -14,8 +14,11 @@ userRouter.post(
 userRouter.post('/login', [email, password], userController.login);
 
 userRouter.get('/', authMiddleware(['ADMIN']), userController.getAllUsers);
+
 userRouter.get(
   '/:id',
   authMiddleware(['USER', 'ADMIN'], true),
   userController.getUserByID
 );
+
+userRouter.get('/activate/:link', userController.activateAccount);

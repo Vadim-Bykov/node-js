@@ -90,5 +90,23 @@ export const getUserByID: RequestHandler<{ id: string }> = async (
   }
 };
 
+export const activateAccount: RequestHandler<{ link: string }> = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const clientUrl: string = process.env.CLIENT_URL_1!;
+    try {
+      const { link } = req.params;
+      await userService.activateAccount(link);
+
+      res.redirect(clientUrl);
+    } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
+};
+
 // const userRole = await RoleModel.create({ role: 'USER' });
 // const adminRole = await RoleModel.create({ role: 'ADMIN' });
