@@ -22,7 +22,7 @@ export const saveRefreshToken = async (
   userId: Types.ObjectId,
   refreshToken: string
 ) => {
-  const tokenData = await findRefreshToken(userId);
+  const tokenData = await findRefreshTokenByUserId(userId);
   if (tokenData) {
     tokenData.refreshToken = refreshToken;
     return tokenData.save();
@@ -30,7 +30,7 @@ export const saveRefreshToken = async (
   await TokenModel.create({ userId, refreshToken });
 };
 
-export const findRefreshToken = async (userId: Types.ObjectId) => {
+export const findRefreshTokenByUserId = async (userId: Types.ObjectId) => {
   const tokenData = await TokenModel.findOne({ userId });
   return tokenData;
 };
@@ -62,6 +62,16 @@ export const removeRefreshToken = async (refreshToken: string) => {
     if (!tokenData) {
       return { warning: `This user was logged out earlier` };
     }
+
+    return tokenData;
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
+  }
+};
+
+export const findRefreshToken = async (refreshToken: string) => {
+  try {
+    const tokenData = await TokenModel.findOne({ refreshToken });
 
     return tokenData;
   } catch (error: any) {

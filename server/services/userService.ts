@@ -121,3 +121,30 @@ export const logout = async (refreshToken: string) => {
     throw ApiError.badRequest(error?.message);
   }
 };
+
+export const refresh = async (refreshToken: string) => {
+  if (!refreshToken) {
+    throw ApiError.unauthorized();
+  }
+
+  try {
+    const tokenData = tokenService.validateRefreshToken(refreshToken);
+    const tokenDataFromDb = await tokenService.findRefreshToken(refreshToken);
+    if (!tokenData || !tokenDataFromDb) {
+      throw ApiError.unauthorized();
+    }
+
+    const user = await UserModal.findById(tokenData.id);
+    if (!user) {
+      throw ApiError.badRequest(`User with ID: ${tokenData.id} was not found`);
+    }
+
+    const userDto = getUserDto(user);
+    const tokens = tokenService.generateToken(userDto);
+    await tokenService.saveRefreshToken(userDto.id, tokens.refreshToken);
+
+    return { ...tokens, user: userDto };
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
+  }
+};

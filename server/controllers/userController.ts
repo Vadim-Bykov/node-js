@@ -122,5 +122,18 @@ export const logout: RequestHandler = async (req, res, next) => {
   }
 };
 
+export const refresh: RequestHandler = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.cookies;
+    const userData = await userService.refresh(refreshToken);
+
+    res.cookie(REFRESH_TOKEN_COOKIE, userData.refreshToken, {
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+    });
+
+    res.json(userData);
+  } catch (error) {}
+};
+
 // const userRole = await RoleModel.create({ role: 'USER' });
 // const adminRole = await RoleModel.create({ role: 'ADMIN' });

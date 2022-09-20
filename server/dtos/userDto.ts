@@ -10,13 +10,15 @@ export interface IUserDto {
   roles?: RoleType[];
 }
 
-export const getUserDto = ({
+type GetUserDto = (userData: IUserData) => IUserDto;
+
+export const getUserDto: GetUserDto = ({
   _id,
   email,
   isActivated,
   picture,
   roles = ['USER'],
-}: IUserData) => {
+}) => {
   return {
     id: _id,
     email,

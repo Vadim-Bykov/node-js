@@ -31,7 +31,7 @@ export const authMiddleware =
       }
 
       if (searchById && String(userData.id) !== req.params.id) {
-        return next(ApiError.forbidden('Tis is not your account'));
+        return next(ApiError.forbidden('This is not your account'));
       }
 
       next();
