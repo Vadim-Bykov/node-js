@@ -15,8 +15,9 @@ export const authMiddleware =
         return next(ApiError.unauthorized());
       }
 
+      const refreshTokenData = tokenService.validateRefreshToken(refreshToken);
       const userData = tokenService.validateAccessToken(accessToken);
-      if (!userData) {
+      if (!userData || !refreshTokenData) {
         return next(ApiError.unauthorized());
       }
 

@@ -22,3 +22,9 @@ userRouter.get(
 );
 
 userRouter.get('/activate/:link', userController.activateAccount);
+
+userRouter.post(
+  '/logout',
+  // authMiddleware(['ADMIN', 'USER']),
+  userController.logout
+);

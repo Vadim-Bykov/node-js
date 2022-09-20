@@ -1,3 +1,4 @@
+import { ApiError } from './../errors/ApiError';
 import jwt from 'jsonwebtoken';
 import { Types } from 'mongoose';
 import { IUserDto } from '../dtos/userDto';
@@ -51,5 +52,19 @@ export const validateAccessToken = (accessToken: string) => {
     return userData as IUserDto;
   } catch (error) {
     return null;
+  }
+};
+
+export const removeRefreshToken = async (refreshToken: string) => {
+  try {
+    const tokenData = await TokenModel.findOneAndDelete({ refreshToken });
+
+    if (!tokenData) {
+      return { warning: `This user was logged out earlier` };
+    }
+
+    return tokenData;
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
   }
 };

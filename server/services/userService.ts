@@ -111,3 +111,13 @@ export const activateAccount = async (link: string) => {
     throw ApiError.badRequest(error?.message);
   }
 };
+
+export const logout = async (refreshToken: string) => {
+  try {
+    const tokenData = await tokenService.removeRefreshToken(refreshToken);
+
+    return tokenData;
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
+  }
+};

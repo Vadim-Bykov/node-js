@@ -5,6 +5,8 @@ import { ApiError } from '../errors/ApiError';
 import { RoleType } from '../models/RoleModel';
 import * as userService from '../services/userService';
 
+const REFRESH_TOKEN_COOKIE = 'refreshToken';
+
 export interface RegistrationBody {
   email: string;
   password: string;
@@ -30,7 +32,7 @@ export const registration: RequestHandler<
       picture: picture as UploadedFile,
     });
 
-    res.cookie('refreshToken', user.refreshToken, {
+    res.cookie(REFRESH_TOKEN_COOKIE, user.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
@@ -54,7 +56,7 @@ export const login: RequestHandler<any, any, LoginBody, any> = async (
   try {
     const user = await userService.login(req.body);
 
-    res.cookie('refreshToken', user.refreshToken, {
+    res.cookie(REFRESH_TOKEN_COOKIE, user.refreshToken, {
       maxAge: 30 * 24 * 60 * 60 * 1000,
       httpOnly: true,
     });
@@ -103,6 +105,18 @@ export const activateAccount: RequestHandler<{ link: string }> = async (
 
       res.redirect(clientUrl);
     } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logout: RequestHandler = async (req, res, next) => {
+  try {
+    const { refreshToken } = req.cookies;
+    const removedToken = await userService.logout(refreshToken);
+
+    res.clearCookie(REFRESH_TOKEN_COOKIE);
+    res.json(removedToken);
   } catch (error) {
     next(error);
   }
