@@ -16,7 +16,7 @@ userRouter.post('/login', [email, password], userController.login);
 userRouter.get('/', authMiddleware(['ADMIN']), userController.getAllUsers);
 
 userRouter.get(
-  '/:id',
+  '/info/:id',
   authMiddleware(['USER', 'ADMIN'], true),
   userController.getUserByID
 );
