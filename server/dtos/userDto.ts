@@ -8,6 +8,7 @@ export interface IUserDto {
   isActivated: boolean;
   picture?: string;
   roles?: RoleType[];
+  name?: string;
 }
 
 type GetUserDto = (userData: IUserData) => IUserDto;
@@ -18,6 +19,7 @@ export const getUserDto: GetUserDto = ({
   isActivated,
   picture,
   roles = ['USER'],
+  name,
 }) => {
   return {
     id: _id,
@@ -25,5 +27,6 @@ export const getUserDto: GetUserDto = ({
     isActivated,
     picture,
     roles,
+    name,
   };
 };

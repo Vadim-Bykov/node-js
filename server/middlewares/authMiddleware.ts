@@ -30,7 +30,9 @@ export const authMiddleware =
         );
       }
 
-      if (searchById && String(userData.id) !== req.params.id) {
+      const userId = req.params.id || req.query.id;
+
+      if (searchById && String(userData.id) !== userId) {
         return next(ApiError.forbidden('This is not your account'));
       }
 

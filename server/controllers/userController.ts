@@ -10,6 +10,7 @@ const REFRESH_TOKEN_COOKIE = 'refreshToken';
 export interface RegistrationBody {
   email: string;
   password: string;
+  name?: string;
   roles?: RoleType[];
 }
 
@@ -137,3 +138,26 @@ export const refresh: RequestHandler = async (req, res, next) => {
 
 // const userRole = await RoleModel.create({ role: 'USER' });
 // const adminRole = await RoleModel.create({ role: 'ADMIN' });
+
+export interface UpdateBody {
+  email: string;
+  password: string;
+  newPassword?: string;
+  name: string;
+}
+
+export const update: RequestHandler<
+  any,
+  any,
+  UpdateBody,
+  { id: string }
+> = async (req, res, next) => {
+  try {
+    const { id } = req.query;
+    const userData = await userService.update({ ...req.body, id });
+
+    res.json(userData);
+  } catch (error) {
+    next(error);
+  }
+};

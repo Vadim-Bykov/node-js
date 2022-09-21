@@ -1,10 +1,14 @@
 import { v4 } from 'uuid';
 import bcrypt from 'bcrypt';
 import { UploadedFile } from 'express-fileupload';
-import { LoginBody, RegistrationBody } from '../controllers/userController';
+import {
+  LoginBody,
+  RegistrationBody,
+  UpdateBody,
+} from '../controllers/userController';
 import { getUserDto } from '../dtos/userDto';
 import { ApiError } from '../errors/ApiError';
-import { UserModal } from '../models/UserModel';
+import { IUserData, UserModal } from '../models/UserModel';
 import { saveFile } from './fileService';
 import * as mailService from './mailServise';
 import { findRoles } from './roleService';
@@ -19,6 +23,7 @@ export const registration = async ({
   password,
   picture,
   roles,
+  name,
 }: IRegistrationParams) => {
   try {
     const candidate = await UserModal.findOne({ email });
@@ -38,6 +43,7 @@ export const registration = async ({
       roles: validRoles,
       picture: fileName,
       activationLink,
+      name,
     });
 
     const userDto = getUserDto(user);
@@ -146,5 +152,58 @@ export const refresh = async (refreshToken: string) => {
     return { ...tokens, user: userDto };
   } catch (error: any) {
     throw ApiError.badRequest(error?.message);
+  }
+};
+
+interface IUpdate extends UpdateBody {
+  id: string;
+}
+
+export const update = async (data: IUpdate) => {
+  const dataToUpdate: { [key: string]: string } = {};
+  const keys = Object.keys(data);
+  const values = Object.values(data);
+  keys.forEach((key, index) => {
+    if (values[index]) {
+      dataToUpdate[key] = values[index];
+    }
+  });
+
+  try {
+    const exUserData = await UserModal.findById(data.id);
+    if (!exUserData) {
+      throw ApiError.badRequest('User with this ID does not exist');
+    }
+
+    const isValidPassword = await bcrypt.compare(
+      data.password,
+      exUserData?.password
+    );
+
+    if (!isValidPassword) {
+      throw ApiError.badRequest('Password is invalid');
+    }
+
+    const password = dataToUpdate.newPassword
+      ? dataToUpdate.newPassword
+      : dataToUpdate.password;
+
+    const hashPassword = await bcrypt.hash(password, 3);
+
+    const user = await UserModal.findOneAndUpdate(
+      { _id: data.id },
+      { ...dataToUpdate, password: hashPassword },
+      { new: true }
+    );
+
+    const userDto = getUserDto(user as IUserData);
+    const { accessToken, refreshToken } = tokenService.generateToken(userDto);
+    await tokenService.saveRefreshToken(userDto.id, refreshToken);
+
+    return { user: userDto, accessToken, refreshToken };
+  } catch (error: any) {
+    throw ApiError.badRequest(
+      `${error?.message}. Probably user's ID is incorrect`
+    );
   }
 };

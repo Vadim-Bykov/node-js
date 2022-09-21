@@ -30,3 +30,9 @@ userRouter.post(
 );
 
 userRouter.get('/refresh', userController.refresh);
+
+userRouter.put(
+  '/update',
+  authMiddleware(['USER', 'ADMIN'], true),
+  userController.update
+);
