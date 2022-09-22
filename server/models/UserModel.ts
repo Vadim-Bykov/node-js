@@ -19,7 +19,7 @@ const User = new Schema<IUserData>({
   isActivated: { type: Boolean, default: false },
   activationLink: { type: String },
   picture: { type: String },
-  roles: [{ type: String, ref: 'Role' }],
+  roles: { type: [String], ref: 'Role' },
 });
 
 export const UserModal = model('User', User);
