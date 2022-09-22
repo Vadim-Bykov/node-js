@@ -1,17 +1,20 @@
 import { model, Schema, Types } from 'mongoose';
+import { MovieData } from './MovieModel';
 
-export interface Actor {
+export interface ActorData {
   _id?: Types.ObjectId;
   firstName: string;
   lastName?: string;
   age?: number;
-  films?: string[];
+  films?: MovieData['name'][];
+  photo?: string;
 }
 
-const Actor = new Schema<Actor>({
+const Actor = new Schema<ActorData>({
   firstName: { type: String, required: true },
   lastName: { type: String },
   age: { type: Number },
+  photo: { type: String },
   films: { type: [String], ref: 'Movie' },
 });
 
