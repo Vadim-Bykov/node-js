@@ -1,4 +1,3 @@
-import { IUserData } from './../models/UserModel';
 import { body } from 'express-validator';
 
 export const email = body('email', 'Email is invalid').trim().isEmail();

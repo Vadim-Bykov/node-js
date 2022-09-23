@@ -9,7 +9,11 @@ export const add: RequestHandler<any, any, ActorData> = async (
   next
 ) => {
   try {
-    const actor = await actorService.add(req.body);
+    const picture = req.files?.picture;
+    const actor = await actorService.add({
+      ...req.body,
+      picture: picture as UploadedFile,
+    });
 
     res.json(actor);
   } catch (error) {
