@@ -16,8 +16,9 @@ app.use(cors({ credentials: true, origin: process.env.CLIENT_URL }));
 app.use(cookieParser());
 app.use(fileUpload({}));
 app.use('/api', router);
-app.use('/files', express.static('static/actors'));
 app.use('/files', express.static('static/users'));
+app.use('/files', express.static('static/actors'));
+app.use('/files', express.static('static/posters'));
 app.use(errorMiddleware);
 
 (async function () {

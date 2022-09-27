@@ -2,7 +2,6 @@ import { UploadedFile } from 'express-fileupload';
 import { getActorDto } from '../dtos/actorDto';
 import { ApiError } from '../errors/ApiError';
 import { ActorModel, ActorData } from '../models/ActorModel';
-import { MovieModel } from '../models/MovieModel';
 import { saveFile } from './fileService';
 import * as movieService from './movieService';
 
@@ -34,7 +33,8 @@ export const add = async ({
       films,
       photo: fileName,
     });
-    const movies = await movieService.addActorToMovies(
+
+    await movieService.addActorToMovies(
       actor.firstName,
       actor._id,
       actor.films
@@ -42,9 +42,7 @@ export const add = async ({
 
     const actorDto = getActorDto(actor);
 
-    console.log({ actor: actorDto, movies });
-
-    return { actor: actorDto, movies };
+    return actorDto;
   } catch (error: any) {
     throw ApiError.badRequest(error?.message);
   }

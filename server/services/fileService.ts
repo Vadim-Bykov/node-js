@@ -4,6 +4,7 @@ import { v4 } from 'uuid';
 enum Folders {
   users = 'users',
   actors = 'actors',
+  posters = 'posters',
 }
 
 type Fn = (
