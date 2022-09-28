@@ -11,3 +11,8 @@ actorRouter.post(
   authMiddleware(['ADMIN']),
   actorController.add
 );
+actorRouter.get(
+  '/info/:id',
+  authMiddleware(['ADMIN', 'USER']),
+  actorController.getActorByID
+);

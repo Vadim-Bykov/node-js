@@ -47,3 +47,18 @@ export const add = async ({
     throw ApiError.badRequest(error?.message);
   }
 };
+
+export const getActorByID = async (id: string) => {
+  try {
+    const actor = await ActorModel.findById(id);
+    if (!actor) {
+      throw ApiError.badRequest('Actor with this ID does not exist');
+    }
+
+    const actorDto = getActorDto(actor);
+
+    return actorDto;
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
+  }
+};

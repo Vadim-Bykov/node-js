@@ -20,3 +20,18 @@ export const add: RequestHandler<any, any, ActorData> = async (
     next(error);
   }
 };
+
+export const getActorByID: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const { id } = req.params;
+    const actor = await actorService.getActorByID(id);
+
+    res.json(actor);
+  } catch (error) {
+    next(error);
+  }
+};
