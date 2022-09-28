@@ -62,3 +62,13 @@ export const getActorByID = async (id: string) => {
     throw ApiError.badRequest(error?.message);
   }
 };
+
+export const getAllActors = async () => {
+  try {
+    const actors = await ActorModel.find();
+
+    return actors;
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
+  }
+};

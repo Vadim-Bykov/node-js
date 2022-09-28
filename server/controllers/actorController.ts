@@ -35,3 +35,13 @@ export const getActorByID: RequestHandler<{ id: string }> = async (
     next(error);
   }
 };
+
+export const getAllActors: RequestHandler = async (req, res, next) => {
+  try {
+    const actors = await actorService.getAllActors();
+
+    res.json(actors);
+  } catch (error) {
+    next(error);
+  }
+};

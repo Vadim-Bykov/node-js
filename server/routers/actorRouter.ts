@@ -16,3 +16,4 @@ actorRouter.get(
   authMiddleware(['ADMIN', 'USER']),
   actorController.getActorByID
 );
+actorRouter.get('/', actorController.getAllActors);
