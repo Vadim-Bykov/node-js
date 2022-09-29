@@ -20,3 +20,27 @@ export const add: RequestHandler<any, any, MovieData> = async (
     next(error);
   }
 };
+export const getMovieByID: RequestHandler<{ id: string }> = async (
+  req,
+  res,
+  next
+) => {
+  try {
+    const { id } = req.params;
+    const movie = await movieService.getMovieByID(id);
+
+    res.json(movie);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllMovies: RequestHandler = async (req, res, next) => {
+  try {
+    const movies = await movieService.getAllMovies();
+
+    res.json(movies);
+  } catch (error) {
+    next(error);
+  }
+};

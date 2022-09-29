@@ -69,3 +69,28 @@ export const addActorToMovies = async (
     throw ApiError.badRequest(error?.message);
   }
 };
+
+export const getMovieByID = async (id: string) => {
+  try {
+    const movie = await MovieModel.findById(id);
+    if (!movie) {
+      throw ApiError.badRequest('Movie with this ID does not exist');
+    }
+
+    const movieDto = getMovieDto(movie);
+
+    return movieDto;
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
+  }
+};
+
+export const getAllMovies = async () => {
+  try {
+    const movies = await MovieModel.find();
+
+    return movies;
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
+  }
+};
