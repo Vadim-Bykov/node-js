@@ -48,23 +48,35 @@ export const addActorToMovies = async (
 ) => {
   if (!films?.length) return;
 
+  const addedMovies: { [key: string]: Omit<MovieData, '_id'> } = {};
+
   try {
-    const movies = await Promise.all(
+    await Promise.all(
       films.map(async (movieName) => {
-        const candidate = await MovieModel.findOne({ name: movieName });
+        const movie = await MovieModel.findOne({ name: movieName });
 
-        if (candidate) {
-          candidate.actors = [
-            ...candidate.actors,
-            { name: actorName, actorId },
-          ];
+        if (!movie) return;
 
-          await candidate.save();
+        const isAddedBefore = movie.actors?.some(
+          (actor) => actor.actorId === actorId
+        );
+
+        if (isAddedBefore) {
+          const movieDto = getMovieDto(movie);
+
+          return movieDto;
+        } else {
+          movie.actors = [...movie.actors, { name: actorName, actorId }];
+          await movie.save();
+
+          const movieDto = getMovieDto(movie);
+
+          addedMovies[movie.name] = movieDto;
         }
       })
     );
 
-    return movies;
+    return addedMovies;
   } catch (error: any) {
     throw ApiError.badRequest(error?.message);
   }

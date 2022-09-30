@@ -6,3 +6,8 @@ export const firstName = body(
 )
   .trim()
   .isLength({ min: 3, max: 20 });
+
+export const films = body(
+  'films',
+  'This is must be an array of movie names'
+).isArray();

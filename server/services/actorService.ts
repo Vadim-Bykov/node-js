@@ -30,19 +30,24 @@ export const add = async ({
       firstName,
       lastName,
       age,
-      films,
       photo: fileName,
     });
 
-    await movieService.addActorToMovies(
-      actor.firstName,
+    const movies = await movieService.addActorToMovies(
+      firstName,
       actor._id,
-      actor.films
+      films
     );
 
-    const actorDto = getActorDto(actor);
+    const addedFilms = films?.filter((film) => movies?.[film]);
 
-    return actorDto;
+    actor.films = addedFilms;
+
+    const actorWithFilms = await actor.save();
+
+    const actorDto = getActorDto(actorWithFilms);
+
+    return { ...actorDto, movies };
   } catch (error: any) {
     throw ApiError.badRequest(error?.message);
   }

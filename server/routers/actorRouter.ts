@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import * as actorController from '../controllers/actorController';
 import { authMiddleware } from '../middlewares/authMiddleware';
-import { firstName } from '../validators/actorValidator';
+import { films, firstName } from '../validators/actorValidator';
 
 export const actorRouter = Router();
 
 actorRouter.post(
   '/add',
-  [firstName],
+  [firstName, films],
   authMiddleware(['ADMIN']),
   actorController.add
 );

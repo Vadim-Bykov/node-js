@@ -2,6 +2,8 @@ import { RequestHandler } from 'express';
 import { ActorData } from '../models/ActorModel';
 import { UploadedFile } from 'express-fileupload';
 import * as actorService from '../services/actorService';
+import { validationResult } from 'express-validator';
+import { ApiError } from '../errors/ApiError';
 
 export const add: RequestHandler<any, any, ActorData> = async (
   req,
@@ -9,6 +11,11 @@ export const add: RequestHandler<any, any, ActorData> = async (
   next
 ) => {
   try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(ApiError.badRequest('Validation error', errors.array()));
+    }
+
     const picture = req.files?.picture;
     const actor = await actorService.add({
       ...req.body,
