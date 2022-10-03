@@ -17,3 +17,4 @@ actorRouter.get(
   actorController.getActorByID
 );
 actorRouter.get('/', actorController.getAllActors);
+actorRouter.put('/update/:id', actorController.updateActorData);

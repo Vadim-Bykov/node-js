@@ -2,6 +2,7 @@ import { UploadedFile } from 'express-fileupload';
 import { getActorDto } from '../dtos/actorDto';
 import { ApiError } from '../errors/ApiError';
 import { ActorModel, ActorData } from '../models/ActorModel';
+import { MovieData, MovieModel } from '../models/MovieModel';
 import { saveFile } from './fileService';
 import * as movieService from './movieService';
 
@@ -73,6 +74,50 @@ export const getAllActors = async () => {
     const actors = await ActorModel.find();
 
     return actors;
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
+  }
+};
+
+interface UpdateActorData extends ActorData {
+  id: string;
+  picture?: UploadedFile;
+}
+
+export const updateActorData = async ({
+  firstName,
+  lastName,
+  age,
+  films,
+  picture,
+  id,
+}: UpdateActorData) => {
+  try {
+    const actor = await ActorModel.findByIdAndUpdate(
+      id,
+      {
+        firstName,
+        lastName,
+        age,
+        films,
+      },
+      { new: true }
+    );
+
+    if (!actor) {
+      throw ApiError.badRequest('Actor with this ID does not exist');
+    }
+
+    // // @ts-ignore
+    // const updatedMovies = await MovieModel.find({
+    //   $and: (movieData: MovieData) =>
+    //     // @ts-ignore
+    //     movieData.actors.filter((actor) => actor.actorId == id),
+    // });
+
+    const actorDto = getActorDto(actor);
+
+    return { ...actorDto, movies: updatedMovies };
   } catch (error: any) {
     throw ApiError.badRequest(error?.message);
   }

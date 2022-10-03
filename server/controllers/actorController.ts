@@ -52,3 +52,18 @@ export const getAllActors: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+export const updateActorData: RequestHandler<
+  { id: string },
+  any,
+  ActorData
+> = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const actor = await actorService.updateActorData({ ...req.body, id });
+
+    res.json(actor);
+  } catch (error) {
+    next(error);
+  }
+};
