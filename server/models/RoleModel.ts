@@ -1,6 +1,11 @@
 import { model, Schema } from 'mongoose';
 
-export type RoleType = 'USER' | 'ADMIN';
+enum Roles {
+  USER = 'USER',
+  ADMIN = 'ADMIN',
+}
+
+export type RoleType = keyof typeof Roles;
 interface IRole {
   role: RoleType;
 }
