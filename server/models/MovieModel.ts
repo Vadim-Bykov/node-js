@@ -1,16 +1,12 @@
 import { model, Schema, Types } from 'mongoose';
 
-interface Actor {
-  name: string;
-  actorId: Types.ObjectId;
-}
 export interface MovieData {
   _id: Types.ObjectId;
   name: string;
   poster?: string;
   rate?: number;
   description: string;
-  actors: Actor[];
+  actors: Types.ObjectId[];
 }
 
 const Movie = new Schema<MovieData>({
@@ -19,7 +15,7 @@ const Movie = new Schema<MovieData>({
   rate: { type: Number, default: 0 },
   description: { type: String, required: true },
   actors: {
-    type: [{ name: String, actorId: Types.ObjectId }],
+    type: [Types.ObjectId],
     required: true,
     ref: 'Actor',
   },

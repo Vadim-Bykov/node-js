@@ -42,7 +42,6 @@ export const addMovie = async ({
 };
 
 export const addActorToMovies = async (
-  actorName: string,
   actorId: Types.ObjectId,
   films?: string[]
 ) => {
@@ -57,16 +56,16 @@ export const addActorToMovies = async (
 
         if (!movie) return;
 
-        const isAddedBefore = movie.actors?.some(
-          (actor) => actor.actorId === actorId
-        );
+        const isAddedBefore = movie.actors?.some((id) => {
+          return id.equals(actorId);
+        });
 
         if (isAddedBefore) {
           const movieDto = getMovieDto(movie);
 
           return movieDto;
         } else {
-          movie.actors = [...movie.actors, { name: actorName, actorId }];
+          movie.actors = [...movie.actors, actorId];
           await movie.save();
 
           const movieDto = getMovieDto(movie);

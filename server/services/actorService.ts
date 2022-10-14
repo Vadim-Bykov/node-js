@@ -1,8 +1,9 @@
 import { UploadedFile } from 'express-fileupload';
+import { Types } from 'mongoose';
+import { UpdateActorDataBody } from '../controllers/actorController';
 import { getActorDto } from '../dtos/actorDto';
 import { ApiError } from '../errors/ApiError';
 import { ActorModel, ActorData } from '../models/ActorModel';
-import { MovieData, MovieModel } from '../models/MovieModel';
 import { saveFile } from './fileService';
 import * as movieService from './movieService';
 
@@ -34,11 +35,7 @@ export const add = async ({
       photo: fileName,
     });
 
-    const movies = await movieService.addActorToMovies(
-      firstName,
-      actor._id,
-      films
-    );
+    const movies = await movieService.addActorToMovies(actor._id, films);
 
     const addedFilms = films?.filter((film) => movies?.[film]);
 
@@ -96,10 +93,11 @@ export const updateActorData = async ({
     const actor = await ActorModel.findByIdAndUpdate(
       id,
       {
-        firstName,
-        lastName,
-        age,
-        films,
+        $set: {
+          firstName,
+          lastName,
+          age,
+        },
       },
       { new: true }
     );
@@ -108,16 +106,27 @@ export const updateActorData = async ({
       throw ApiError.badRequest('Actor with this ID does not exist');
     }
 
-    // // @ts-ignore
-    // const updatedMovies = await MovieModel.find({
-    //   $and: (movieData: MovieData) =>
-    //     // @ts-ignore
-    //     movieData.actors.filter((actor) => actor.actorId == id),
-    // });
+    const updatedMovies = await movieService.addActorToMovies(
+      actor?._id as Types.ObjectId,
+      films
+    );
+    const updatedFilms = updatedMovies && Object.keys(updatedMovies);
 
-    const actorDto = getActorDto(actor);
+    const actorWithMovies = await ActorModel.findByIdAndUpdate(
+      id,
+      {
+        $addToSet: { films: updatedFilms },
+      },
+      { new: true }
+    );
 
-    return { ...actorDto, movies: updatedMovies };
+    if (!actorWithMovies) {
+      throw ApiError.badRequest('Actor with this ID does not exist');
+    }
+
+    const actorDto = getActorDto(actorWithMovies);
+
+    return { actor: actorDto, updatedMovies };
   } catch (error: any) {
     throw ApiError.badRequest(error?.message);
   }

@@ -53,6 +53,10 @@ export const getAllActors: RequestHandler = async (req, res, next) => {
   }
 };
 
+export interface UpdateActorDataBody extends ActorData {
+  newFirstName: ActorData['firstName'];
+}
+
 export const updateActorData: RequestHandler<
   { id: string },
   any,
