@@ -44,3 +44,18 @@ export const getAllMovies: RequestHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getMoviesByActorID: RequestHandler<
+  any,
+  any,
+  any,
+  { actorId: string }
+> = async (req, res, next) => {
+  try {
+    const movies = await movieService.getMoviesByActorID(req.query?.actorId);
+
+    res.json(movies);
+  } catch (error) {
+    next(error);
+  }
+};

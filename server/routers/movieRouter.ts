@@ -15,3 +15,4 @@ movieRouter.get(
   authMiddleware(['ADMIN', 'USER']),
   movieController.getAllMovies
 );
+movieRouter.get('/actorMovies', movieController.getMoviesByActorID);

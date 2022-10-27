@@ -53,6 +53,9 @@ export const add = async ({
 
 export const getActorByID = async (id: string) => {
   try {
+    if (!id) {
+      throw ApiError.badRequest('ActorId is required but not provided');
+    }
     const actor = await ActorModel.findById(id);
     if (!actor) {
       throw ApiError.badRequest('Actor with this ID does not exist');

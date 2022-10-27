@@ -4,6 +4,7 @@ import { Types } from 'mongoose';
 import { UploadedFile } from 'express-fileupload';
 import { saveFile } from './fileService';
 import { getMovieDto } from '../dtos/movieDto';
+import * as actorService from './actorService';
 
 interface AddMovieData extends MovieData {
   picture?: UploadedFile;
@@ -101,6 +102,21 @@ export const getAllMovies = async () => {
     const movies = await MovieModel.find();
 
     return movies;
+  } catch (error: any) {
+    throw ApiError.badRequest(error?.message);
+  }
+};
+
+export const getMoviesByActorID = async (actorId: string) => {
+  try {
+    const actor = await actorService.getActorByID(actorId);
+
+    const actorMovies = await MovieModel.find({ actors: actor.id });
+    if (!actorMovies.length) {
+      throw ApiError.badRequest('We have no movies for this actor');
+    }
+
+    return actorMovies;
   } catch (error: any) {
     throw ApiError.badRequest(error?.message);
   }
