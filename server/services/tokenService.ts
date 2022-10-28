@@ -78,3 +78,14 @@ export const findRefreshToken = async (refreshToken: string) => {
     throw ApiError.badRequest(error?.message);
   }
 };
+
+export const getUserIdFromToken = (accessToken: string) => {
+  try {
+    const userId = jwt.decode(accessToken);
+    console.log({ userId });
+
+    return userId;
+  } catch (error) {
+    return null;
+  }
+};
