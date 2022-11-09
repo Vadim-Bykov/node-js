@@ -4,13 +4,11 @@ import { FavoriteMovieList } from '../models/FavoriteMovieListModal';
 import * as movieListService from '../services/movieListService';
 
 export const createFavoriteMovieList: RequestHandler<
-  { userId: Types.ObjectId },
+  { userId: string },
   any,
-  { movies: FavoriteMovieList['movies'] }
+  { movies: FavoriteMovieList['movies']; title: FavoriteMovieList['title'] }
 > = async (req, res, next) => {
   try {
-    console.log({ movies: req.body, userId: req.params.userId });
-
     const list = await movieListService.createFavoriteMovieList({
       userId: req.params.userId,
       ...req.body,

@@ -9,15 +9,23 @@ import * as tokenService from './tokenService';
 export const createFavoriteMovieList = async ({
   userId,
   movies,
+  title,
 }: {
-  userId: Types.ObjectId;
+  userId: string;
   movies: FavoriteMovieList['movies'];
+  title: FavoriteMovieList['title'];
 }) => {
   // const userId = tokenService.getUserIdFromToken()
   try {
+    // const listCandidate = await FavoriteMovieListModel.find({ userId });
+    // if (listCandidate) {
+    //   throw ApiError.badRequest('');
+    // }
+
     const list = await FavoriteMovieListModel.create({
       userId,
       movies,
+      title,
     });
 
     return list;
